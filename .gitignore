@@ -1,0 +1,23 @@
+# Секреты и локальные настройки
+.env
+.env.local
+
+# База данных и загруженные фото
+data/
+media/
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

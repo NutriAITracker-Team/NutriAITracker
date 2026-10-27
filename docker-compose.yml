@@ -1,0 +1,38 @@
+# ============================================================
+#  NutriAI Tracker — локальный запуск backend
+#  Запуск:    docker compose up -d --build
+#  Логи:      docker compose logs -f backend
+#  Остановка: docker compose down
+# ============================================================
+
+name: nutriaitracker
+
+services:
+  backend:
+    build:
+      context: .
+    image: nutriaitracker-backend:dev
+    container_name: nutriaitracker-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Внутри контейнера пути отличаются от локальных.
+      DATABASE_URL: "sqlite:////app/data/nutriai.db"
+      MEDIA_ROOT: "/app/media"
+    ports:
+      # 8001 снаружи, чтобы не конфликтовать с другими проектами на 8000.
+      - "${BACKEND_PORT:-8001}:8000"
+    volumes:
+      - ./data:/app/data
+      - ./media:/app/media
+      # Код монтируется в контейнер: после правок достаточно перезапуска,
+      # пересборка образа не нужна.
+      - ./main.py:/app/main.py:ro
+      - ./scripts:/app/scripts:ro
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
